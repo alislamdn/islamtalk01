@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f4ed">
+  <title>IslamTalk — community, in good company</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f5f4ed;
+      --white: #fffefa;
+      --ink: #17241d;
+      --muted: #748078;
+      --line: #e4e6dc;
+      --green: #165c45;
+      --green-dark: #104633;
+      --mint: #e7f2e9;
+      --lime: #d7ed71;
+      --coral: #e68068;
+      --gold: #d9a545;
+      --shadow: 0 20px 70px #24372d15;
+      font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; color: var(--ink); background: var(--paper); }
+    button, input, textarea { font: inherit; }
+    button { color: inherit; }
+    button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid #d5e971; outline-offset: 2px; }
+    .hidden { display: none !important; }
+    .eyebrow { color: var(--green); font-size: 10px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: -.04em; font-size: 19px; }
+    .brand-mark { width: 31px; height: 31px; display: grid; place-items: center; background: var(--lime); border-radius: 10px 10px 10px 2px; color: var(--green-dark); font-family: Georgia, serif; font-size: 19px; }
+    .auth-page { min-height: 100vh; display: grid; grid-template-columns: minmax(340px, .86fr) minmax(500px, 1.14fr); background: var(--white); }
+    .auth-aside { position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; padding: 34px clamp(28px, 5vw, 72px); color: #f7f5e8; background: var(--green); }
+    .auth-aside::before { content: ""; position: absolute; width: 340px; height: 340px; right: -100px; top: 24%; border: 1px solid #ffffff1b; border-radius: 50%; box-shadow: 0 0 0 35px #ffffff08, 0 0 0 70px #ffffff08; }
+    .auth-aside .brand { position: relative; color: #fffefa; }
+    .aside-copy { position: relative; max-width: 440px; padding: 48px 0; }
+    .aside-copy .eyebrow { color: var(--lime); }
+    .aside-copy h1 { margin: 19px 0; max-width: 440px; font: 500 clamp(38px, 5vw, 66px)/1.02 Georgia, "Times New Roman", serif; letter-spacing: -.045em; }
+    .aside-copy p { max-width: 355px; color: #d8e6db; font-size: 14px; line-height: 1.75; }
+    .quote { position: relative; max-width: 380px; padding: 16px 18px; border-left: 2px solid var(--lime); color: #e5eee6; font: italic 15px/1.6 Georgia, serif; }
+    .aside-foot { position: relative; color: #c3d4c7; font-size: 11px; }
+    .auth-main { display: grid; place-items: center; padding: 38px 28px; }
+    .auth-form { width: min(100%, 470px); }
+    .form-head { margin-bottom: 25px; }
+    .form-head h2 { margin: 8px 0 7px; font: 500 31px/1.15 Georgia, serif; letter-spacing: -.03em; }
+    .form-head p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 12px; }
+    .field { min-width: 0; }
+    .field.wide { grid-column: 1 / -1; }
+    .field label, .group-label { display: block; margin-bottom: 6px; color: #38473e; font-size: 11px; font-weight: 700; }
+    .field input { width: 100%; height: 43px; padding: 0 12px; border: 1px solid var(--line); border-radius: 5px; background: #fff; font-size: 13px; }
+    .field input::placeholder { color: #a7afa8; }
+    .hint { margin: 5px 0 0; color: var(--muted); font-size: 10px; line-height: 1.45; }
+    .choice-row { display: flex; gap: 10px; }
+    .choice { flex: 1; position: relative; }
+    .choice input { position: absolute; opacity: 0; pointer-events: none; }
+    .choice label { display: flex; min-height: 42px; align-items: center; gap: 8px; padding: 0 11px; border: 1px solid var(--line); border-radius: 5px; cursor: pointer; font-size: 12px; }
+    .choice label::before { content: ""; width: 14px; height: 14px; border: 1px solid #b5c0b7; border-radius: 50%; }
+    .choice input:checked + label { border-color: var(--green); background: var(--mint); }
+    .choice input:checked + label::before { border: 4px solid var(--green); }
+    .choice input:focus-visible + label { outline: 3px solid var(--lime); outline-offset: 2px; }
+    .check-row { display: flex; align-items: flex-start; gap: 9px; margin: 18px 0 14px; color: #58655b; font-size: 11px; line-height: 1.6; }
+    .check-row input { margin-top: 2px; accent-color: var(--green); }
+    .text-link { padding: 0; border: 0; background: transparent; color: var(--green); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; font-size: inherit; }
+    .primary { display: flex; width: 100%; min-height: 45px; justify-content: center; align-items: center; gap: 9px; border: 0; border-radius: 5px; background: var(--green); color: white; font-size: 13px; font-weight: 700; cursor: pointer; transition: background .18s, transform .18s; }
+    .primary:hover { background: var(--green-dark); transform: translateY(-1px); }
+    .auth-note { margin: 12px 0 0; color: var(--muted); text-align: center; font-size: 10px; line-height: 1.5; }
+    .privacy-strip { margin-top: 17px; padding: 10px 12px; border-radius: 4px; background: #f2f5ee; color: #526055; font-size: 10px; line-height: 1.55; }
+    .auth-error { min-height: 16px; margin: 6px 0 0; color: #a43128; font-size: 11px; }
+
+    .app { display: grid; min-height: 100vh; grid-template-columns: 228px minmax(320px, 1fr) 286px; background: var(--white); }
+    .sidebar { display: flex; flex-direction: column; min-height: 100vh; padding: 24px 16px 15px; border-right: 1px solid var(--line); background: #f8f8f2; }
+    .sidebar .brand { margin: 0 7px 28px; }
+    .profile { display: flex; align-items: center; gap: 10px; padding: 10px 9px 15px; border-bottom: 1px solid var(--line); }
+    .avatar { flex: 0 0 auto; display: grid; width: 38px; aspect-ratio: 1; place-items: center; border-radius: 50%; background: #d8ead8; color: var(--green-dark); font: 600 14px Georgia, serif; }
+    .avatar.coral { background: #f8ddd4; color: #914735; }
+    .avatar.gold { background: #f4e5bd; color: #73531c; }
+    .avatar.blue { background: #dce8ee; color: #395c70; }
+    .avatar.lilac { background: #e8e2f0; color: #5a4b70; }
+    .profile-copy { min-width: 0; }
+    .profile-copy strong, .profile-copy small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .profile-copy strong { font-size: 12px; }
+    .profile-copy small { margin-top: 3px; color: var(--muted); font-size: 10px; }
+    .nav-label { margin: 22px 8px 8px; color: #8a938c; font-size: 9px; font-weight: 800; letter-spacing: .11em; text-transform: uppercase; }
+    .nav-button { display: flex; width: 100%; min-height: 38px; align-items: center; gap: 10px; padding: 0 10px; border: 0; border-radius: 4px; background: transparent; color: #566258; text-align: left; font-size: 12px; cursor: pointer; }
+    .nav-button:hover, .nav-button.active { background: #e8eee6; color: var(--green-dark); }
+    .nav-symbol { width: 18px; text-align: center; font-size: 15px; }
+    .nav-count { margin-left: auto; color: var(--muted); font-size: 10px; }
+    .sidebar-bottom { margin-top: auto; }
+    .feature-box { margin: 20px 3px 14px; padding: 13px; border-radius: 5px; background: #e8f0df; }
+    .feature-box strong { display: block; font-size: 11px; }
+    .feature-box p { margin: 5px 0 10px; color: #596b5c; font-size: 10px; line-height: 1.5; }
+    .small-action { border: 0; background: transparent; color: var(--green); font-size: 10px; font-weight: 700; cursor: pointer; }
+    .bottom-actions { display: flex; justify-content: space-between; padding: 8px 4px 0; border-top: 1px solid var(--line); }
+    .icon-button { display: inline-grid; min-width: 34px; min-height: 34px; place-items: center; border: 0; border-radius: 4px; background: transparent; color: #647068; cursor: pointer; }
+    .icon-button:hover { background: #e8eee6; color: var(--green); }
+    .center { display: flex; min-width: 0; height: 100vh; flex-direction: column; }
+    .topbar { display: flex; min-height: 68px; align-items: center; justify-content: space-between; gap: 16px; padding: 0 25px; border-bottom: 1px solid var(--line); }
+    .topbar h1 { margin: 0; font: 500 20px Georgia, serif; }
+    .topbar small { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; }
+    .top-actions { display: flex; align-items: center; gap: 8px; }
+    .quiet-chip { display: flex; align-items: center; gap: 6px; padding: 7px 9px; border: 1px solid var(--line); border-radius: 4px; color: #667167; font-size: 10px; cursor: pointer; }
+    .quiet-chip.on { border-color: #b6d38f; background: #edf4dd; color: var(--green); }
+    .searchbar { padding: 13px 22px 0; }
+    .searchbar input { width: 100%; height: 37px; padding: 0 12px; border: 1px solid var(--line); border-radius: 4px; background: #fbfbf7; font-size: 12px; }
+    .filter-row { display: flex; gap: 6px; padding: 10px 22px; border-bottom: 1px solid var(--line); }
+    .filter { padding: 6px 11px; border: 0; border-radius: 20px; background: transparent; color: #79837b; font-size: 10px; cursor: pointer; }
+    .filter.active { background: #e9f1e7; color: var(--green); font-weight: 700; }
+    .chat-list { flex: 1; overflow: auto; }
+    .chat-row { display: flex; width: 100%; min-height: 73px; align-items: center; gap: 11px; padding: 12px 22px; border: 0; border-bottom: 1px solid #eff0e9; background: transparent; text-align: left; cursor: pointer; }
+    .chat-row:hover, .chat-row.selected { background: #f4f7f0; }
+    .chat-meta { flex: 1; min-width: 0; }
+    .chat-meta-top { display: flex; justify-content: space-between; gap: 8px; }
+    .chat-meta strong { overflow: hidden; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+    .chat-meta time { flex: 0 0 auto; color: #8b948d; font-size: 9px; }
+    .chat-preview { display: flex; justify-content: space-between; gap: 8px; margin-top: 6px; color: #7a847c; font-size: 10px; }
+    .chat-preview span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .unread { min-width: 17px; height: 17px; display: grid; place-items: center; border-radius: 50%; background: var(--green); color: white; font-size: 9px; }
+    .conversation { display: flex; min-height: 0; flex: 1; flex-direction: column; }
+    .conversation-head { display: flex; min-height: 60px; align-items: center; gap: 10px; padding: 10px 23px; border-bottom: 1px solid var(--line); }
+    .conversation-head .avatar { width: 34px; }
+    .conversation-title { flex: 1; }
+    .conversation-title strong { display: block; font-size: 12px; }
+    .conversation-title small { display: block; margin-top: 3px; color: #718078; font-size: 10px; }
+    .online-dot { display: inline-block; width: 6px; height: 6px; margin-right: 4px; border-radius: 50%; background: #71ac6c; }
+    .messages { display: flex; flex: 1; flex-direction: column; gap: 14px; overflow-y: auto; padding: 20px clamp(16px, 4vw, 50px); background-color: #fffefa; background-image: radial-gradient(#d5d9cd55 .7px, transparent .7px); background-size: 19px 19px; }
+    .day-divider { display: flex; justify-content: center; margin: 3px 0 4px; }
+    .day-divider span { padding: 5px 9px; border: 1px solid #eaebe4; border-radius: 12px; background: #fffefa; color: #829087; font-size: 9px; }
+    .message { display: flex; max-width: 80%; align-items: flex-end; gap: 8px; align-self: flex-start; }
+    .message.mine { align-self: flex-end; flex-direction: row-reverse; }
+    .message .avatar { width: 25px; font-size: 10px; }
+    .bubble { padding: 10px 12px 8px; border: 1px solid #e8e9e1; border-radius: 4px 12px 12px 12px; background: white; box-shadow: 0 2px 6px #15271c08; }
+    .message.mine .bubble { border-color: #d7e8d5; border-radius: 12px 4px 12px 12px; background: #eaf3e8; }
+    .bubble p { margin: 0; color: #344239; font-size: 12px; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .bubble time { display: block; margin-top: 5px; color: #89938b; text-align: right; font-size: 9px; }
+    .cite-warning { display: inline-flex; align-items: center; gap: 5px; margin-top: 7px; padding: 4px 6px; border-radius: 3px; background: #fff2d6; color: #7c5c19; font-size: 9px; }
+    .composer-wrap { padding: 12px 22px 15px; border-top: 1px solid var(--line); background: #fffefa; }
+    .composer-tools { display: flex; align-items: center; gap: 4px; margin-bottom: 7px; }
+    .composer-tools .icon-button { min-width: 28px; min-height: 27px; font-size: 14px; }
+    .composer { display: flex; align-items: flex-end; gap: 8px; }
+    .composer textarea { flex: 1; min-height: 41px; max-height: 120px; resize: none; padding: 11px 12px; border: 1px solid var(--line); border-radius: 4px; background: #fbfbf7; font-size: 12px; line-height: 1.4; }
+    .send-button { display: grid; width: 41px; height: 41px; place-items: center; border: 0; border-radius: 4px; background: var(--green); color: white; cursor: pointer; }
+    .send-button:hover { background: var(--green-dark); }
+    .right-panel { display: flex; flex-direction: column; gap: 20px; overflow-y: auto; padding: 23px 17px; border-left: 1px solid var(--line); background: #fbfbf7; }
+    .panel-heading { display: flex; align-items: center; justify-content: space-between; }
+    .panel-heading h2 { margin: 0; font-size: 12px; }
+    .panel-section { padding-bottom: 17px; border-bottom: 1px solid var(--line); }
+    .contact-card { display: flex; align-items: center; gap: 10px; margin-top: 13px; }
+    .contact-card .avatar { width: 42px; }
+    .contact-card strong { display: block; font-size: 12px; }
+    .contact-card small { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; }
+    .presence-note { margin: 12px 0 0; padding: 10px; border-radius: 4px; background: #f0f3e8; color: #5e6d5f; font-size: 10px; line-height: 1.55; }
+    .feature-card { padding: 12px; border: 1px solid var(--line); border-radius: 4px; background: white; }
+    .feature-title { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; }
+    .feature-icon { display: grid; width: 25px; height: 25px; place-items: center; border-radius: 5px; background: #ecf2e5; color: var(--green); }
+    .feature-card p { margin: 8px 0 10px; color: #778178; font-size: 10px; line-height: 1.55; }
+    .toggle { position: relative; width: 32px; height: 18px; margin-left: auto; border: 0; border-radius: 10px; background: #d4d9d1; cursor: pointer; }
+    .toggle::after { content: ""; position: absolute; top: 3px; left: 3px; width: 12px; height: 12px; border-radius: 50%; background: white; transition: transform .18s; }
+    .toggle.on { background: var(--green); }
+    .toggle.on::after { transform: translateX(14px); }
+    .event { display: flex; align-items: flex-start; gap: 9px; margin-top: 13px; }
+    .event-date { flex: 0 0 35px; padding: 6px 2px; border-radius: 4px; background: #f5e9cf; color: #7a5a1f; text-align: center; }
+    .event-date b { display: block; font-size: 12px; }
+    .event-date small { font-size: 8px; text-transform: uppercase; }
+    .event-copy strong { display: block; font-size: 10px; }
+    .event-copy small { display: block; margin-top: 4px; color: #899189; font-size: 9px; }
+    .toast { position: fixed; right: 20px; bottom: 20px; z-index: 20; max-width: min(360px, calc(100vw - 40px)); padding: 12px 16px; border-radius: 5px; background: var(--ink); color: white; box-shadow: var(--shadow); font-size: 12px; animation: rise .2s ease-out; }
+    @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    dialog { width: min(560px, calc(100vw - 30px)); max-height: min(78vh, 700px); padding: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 6px; background: var(--white); color: var(--ink); box-shadow: 0 24px 90px #0e201b55; }
+    dialog::backdrop { background: #14251e88; backdrop-filter: blur(2px); }
+    .dialog-head { display: flex; align-items: center; justify-content: space-between; padding: 17px 20px; border-bottom: 1px solid var(--line); }
+    .dialog-head h2 { margin: 0; font: 500 20px Georgia, serif; }
+    .dialog-content { max-height: calc(78vh - 65px); overflow: auto; padding: 18px 20px 22px; color: #59655c; font-size: 12px; line-height: 1.7; }
+    .dialog-content h3 { margin: 17px 0 5px; color: var(--ink); font-size: 12px; }
+    .dialog-content h3:first-child { margin-top: 0; }
+    .dialog-content p { margin: 5px 0 10px; }
+    .dialog-content ul { margin: 5px 0 12px; padding-left: 19px; }
+    .dialog-content .notice { padding: 10px; border-left: 2px solid var(--gold); background: #fbf3df; color: #6d5b31; }
+    .mobile-nav { display: none; }
+    .space-list { display: grid; gap: 2px; padding-left: 9px; }
+    .space-list .nav-button { min-height: 31px; font-size: 11px; }
+    .space-actions { display: flex; justify-content: space-between; align-items: center; margin: 20px 8px 7px; color: #8a938c; font-size: 9px; font-weight: 800; letter-spacing: .11em; text-transform: uppercase; }
+    .space-actions button { padding: 2px 5px; border: 0; background: transparent; color: var(--green); font-size: 14px; cursor: pointer; }
+    .workspace-empty { max-width: 470px; margin: auto; padding: 35px 24px; text-align: center; }
+    .workspace-empty .empty-mark { width: 52px; height: 52px; display: grid; place-items: center; margin: 0 auto 17px; border-radius: 16px 16px 16px 4px; background: var(--lime); color: var(--green); font: 26px Georgia, serif; }
+    .workspace-empty h2 { margin: 0 0 8px; font: 500 26px Georgia, serif; }
+    .workspace-empty p { margin: 0 auto 20px; max-width: 360px; color: var(--muted); font-size: 12px; line-height: 1.7; }
+    .empty-actions { display: flex; justify-content: center; gap: 9px; flex-wrap: wrap; }
+    .secondary { min-height: 39px; padding: 0 13px; border: 1px solid var(--line); border-radius: 4px; background: white; color: var(--green); font-size: 11px; font-weight: 700; cursor: pointer; }
+    .secondary:hover { background: var(--mint); }
+    .empty-channel { margin: auto; max-width: 380px; padding: 28px 18px; text-align: center; color: var(--muted); font-size: 11px; line-height: 1.65; }
+    .empty-channel strong { display: block; margin-bottom: 5px; color: var(--ink); font: 500 18px Georgia, serif; }
+    .space-list .nav-button.active { background: #e8eee6; color: var(--green-dark); }
+    #inbox { display: flex; min-height: 0; flex: 1; }
+    #chatList { display: flex; min-height: 0; flex: 1; align-items: center; justify-content: center; }
+    .field-label { display: block; margin: 0 0 7px; color: #38473e; font-size: 11px; font-weight: 700; }
+    .create-form input, .create-form select { width: 100%; height: 42px; margin-bottom: 15px; padding: 0 11px; border: 1px solid var(--line); border-radius: 4px; background: white; font-size: 12px; }
+    .create-form .hint { margin: -5px 0 13px; }
+    .support-form textarea { width: 100%; min-height: 95px; margin-bottom: 12px; padding: 10px; resize: vertical; border: 1px solid var(--line); border-radius: 4px; font: inherit; font-size: 12px; }
+    .support-form select { width: 100%; height: 40px; margin-bottom: 12px; padding: 0 10px; border: 1px solid var(--line); border-radius: 4px; background: white; font-size: 12px; }
+    .call-preview { padding: 12px; border-left: 2px solid var(--gold); background: #fbf3df; color: #6d5b31; }
+    .call-actions { display: flex; gap: 9px; margin-top: 16px; }
+    .call-actions > * { flex: 1; }
+    @media (max-width: 1100px) {
+      .app { grid-template-columns: 205px minmax(300px, 1fr); }
+      .right-panel { display: none; }
+    }
+    @media (max-width: 720px) {
+      .auth-page { grid-template-columns: 1fr; }
+      .auth-aside { min-height: 225px; padding: 22px 23px; }
+      .aside-copy { padding: 26px 0 12px; }
+      .aside-copy h1 { max-width: 390px; margin: 11px 0; font-size: 39px; }
+      .aside-copy p, .quote { display: none; }
+      .aside-foot { margin-top: 5px; }
+      .auth-main { padding: 27px 22px 36px; }
+      .app { display: flex; min-height: 100dvh; flex-direction: column; }
+      .sidebar { display: none; }
+      .center { height: 100dvh; min-height: 540px; }
+      .topbar { min-height: 59px; padding: 0 15px; }
+      .searchbar { padding: 10px 14px 0; }
+      .filter-row { padding: 9px 14px; }
+      .chat-row { min-height: 67px; padding: 10px 15px; }
+      .conversation-head { padding: 8px 14px; }
+      .messages { padding: 15px 13px; }
+      .composer-wrap { padding: 8px 12px 11px; }
+      .mobile-nav { display: flex; min-height: 53px; justify-content: space-around; align-items: center; border-top: 1px solid var(--line); background: #fbfbf7; }
+      .mobile-nav button { display: grid; place-items: center; gap: 2px; min-width: 54px; border: 0; background: transparent; color: #6e7a70; font-size: 16px; }
+      .mobile-nav small { font-size: 8px; }
+    }
+    @media (max-width: 420px) {
+      .fields { grid-template-columns: 1fr; }
+      .field.wide { grid-column: auto; }
+      .form-head h2 { font-size: 27px; }
+      .auth-main { padding-right: 17px; padding-left: 17px; }
+      .quiet-chip { padding: 7px; }
+      .quiet-label { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main id="authPage" class="auth-page">
+    <aside class="auth-aside">
+      <div class="brand"><span class="brand-mark">ا</span> IslamTalk</div>
+      <div class="aside-copy">
+        <div class="eyebrow">A little more thoughtful</div>
+        <h1>Good company.<br>Better conversations.</h1>
+        <p>A calm place for your people, your circles, and the everyday things worth sharing.</p>
+        <div class="quote">“The best of people are those who are most beneficial to people.”</div>
+      </div>
+      <div class="aside-foot">IslamTalk · Built for respectful connection</div>
+    </aside>
+    <section class="auth-main">
+      <form class="auth-form" id="signupForm" novalidate>
+        <div class="form-head">
+          <div class="eyebrow">Your space starts here</div>
+          <h2>Set up your IslamTalk profile</h2>
+          <p>IslamTalk is in development. Account services are not connected yet, so this page does not create or save an account.</p>
+        </div>
+        <div class="fields">
+          <div class="field"><label for="displayName">Name</label><input id="displayName" name="name" autocomplete="name" placeholder="How should we call you?" required></div>
+          <div class="field"><label for="birthDate">Date of birth</label><input id="birthDate" name="birthDate" type="date" autocomplete="bday" required><p class="hint">Available from age 11. Ages 11–12 need parent or guardian permission.</p></div>
+          <div class="field wide"><label for="email">Email address</label><input id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required></div>
+          <div class="field wide"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="new-password" minlength="10" placeholder="At least 10 characters" required><p class="hint">Account security is still being set up. Never reuse a password from another account.</p></div>
+          <div class="field wide">
+            <span class="group-label">Are you an employee of Al-Islam MD?</span>
+            <div class="choice-row">
+              <div class="choice"><input id="employeeYes" type="radio" name="employee" value="yes" required><label for="employeeYes">Yes, I am</label></div>
+              <div class="choice"><input id="employeeNo" type="radio" name="employee" value="no"><label for="employeeNo">No, I am not</label></div>
+            </div>
+            <p class="hint">This answer does not affect access. It is not verified or retained.</p>
+          </div>
+        </div>
+        <label class="check-row hidden" id="guardianConsentRow"><input id="guardianConsent" type="checkbox"><span>I confirm that a parent or guardian has reviewed this and given permission for me to use IslamTalk. This page cannot verify that permission.</span></label>
+        <label class="check-row"><input id="agree" type="checkbox" required><span>I agree to the <button type="button" class="text-link" data-policy="terms">Terms</button> and <button type="button" class="text-link" data-policy="privacy">Privacy Policy</button>, and confirm I have read the <button type="button" class="text-link" data-policy="rules">Community Rules</button>.</span></label>
+        <button class="primary" type="submit">Enter IslamTalk <span aria-hidden="true">→</span></button>
+        <p class="auth-error" id="authError" role="alert"></p>
+        <p class="auth-note">Registration is not connected yet. Avoid entering sensitive details or a password you use elsewhere.</p>
+        <div class="privacy-strip"><strong>Current data handling:</strong> form entries stay in this page's memory. Nothing is transmitted or saved, and entries are cleared when you leave.</div>
+      </form>
+    </section>
+  </main>
+
+  <main id="app" class="app hidden" aria-label="IslamTalk messaging">
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-mark">ا</span> IslamTalk</div>
+      <div class="profile"><div class="avatar" id="profileAvatar">Y</div><div class="profile-copy"><strong id="profileName">You</strong><small>Available for a good chat</small></div></div>
+      <div class="space-actions">Servers <button id="createServer" aria-label="Create server" title="Create server">+</button></div>
+      <div class="space-list" id="serverList"></div>
+      <div class="space-actions">Channels <button id="createChannel" aria-label="Create channel" title="Create channel">+</button></div>
+      <div class="space-list" id="channelList"></div>
+      <div class="space-actions">Community groups <button id="createGroup" aria-label="Create community group" title="Create community group">+</button></div>
+      <div class="space-list" id="groupList"></div>
+      <div class="sidebar-bottom">
+        <div class="feature-box"><strong>Thoughtful forwarding</strong><p>A gentle source check helps keep group chats grounded.</p><button class="small-action" data-policy="forwarding">How it works →</button></div>
+        <div class="bottom-actions"><button class="icon-button" title="Community rules" aria-label="Community rules" data-policy="rules">☷</button><button class="icon-button" title="Privacy policy" aria-label="Privacy policy" data-policy="privacy">◈</button><button class="icon-button" title="Support" aria-label="Support" data-policy="support">?</button><button class="icon-button" title="Sign out" aria-label="Sign out" id="signOut">↪</button></div>
+      </div>
+    </aside>
+    <section class="center">
+      <header class="topbar">
+        <div><h1 id="viewTitle">Your workspace</h1><small id="viewSubtitle">Start with a server, channel, or community group</small></div>
+        <div class="top-actions"><button class="quiet-chip" id="quietToggle" aria-pressed="false"><span>◐</span><span class="quiet-label">Quiet hours</span></button><button class="icon-button" id="newChat" aria-label="Create community group" title="Create community group">＋</button></div>
+      </header>
+      <div id="inbox">
+        <div class="chat-list" id="chatList" aria-label="Conversations"></div>
+      </div>
+      <section id="conversation" class="conversation hidden" aria-label="Conversation">
+        <header class="conversation-head"><div class="avatar" id="activeAvatar"></div><div class="conversation-title"><strong id="activeName"></strong><small id="activeStatus"></small></div><button class="icon-button" id="callAction" title="Open call options" aria-label="Call options">⌕</button><button class="icon-button" id="saveAction" title="Save channel" aria-label="Save channel">⌑</button><button class="icon-button" id="backToInbox" title="Back to workspace" aria-label="Back to workspace">←</button></header>
+        <div class="messages" id="messages" aria-live="polite"></div>
+        <div class="composer-wrap"><div class="composer-tools"><button class="icon-button" id="emojiAction" title="Add a kind note" aria-label="Add a kind note">☺</button><button class="icon-button" id="citeAction" title="Share with a source check" aria-label="Share with a source check">◉</button><span class="hint">Messaging service is not connected yet. Messages stay in this page.</span></div><form class="composer" id="messageForm"><textarea id="messageInput" rows="1" placeholder="Write something kind…" aria-label="Message"></textarea><button class="send-button" type="submit" title="Send message" aria-label="Send message">➤</button></form></div>
+      </section>
+      <nav class="mobile-nav"><button id="mobileServer">＋<small>Server</small></button><button id="mobileChannel">#<small>Channel</small></button><button id="mobileGroup">◎<small>Group</small></button><button id="mobileSettings">☷<small>Rules</small></button><button id="mobileSupport">?<small>Support</small></button></nav>
+    </section>
+    <aside class="right-panel">
+      <section class="panel-section"><div class="panel-heading"><h2>Your workspace</h2><span class="eyebrow">Yours to shape</span></div><p class="presence-note">Create a server for a shared interest, add channels for different topics, or start a community group.</p><button class="small-action" id="detailsAction">Read community rules →</button></section>
+      <section class="panel-section"><div class="panel-heading"><h2>Your boundaries</h2><span class="eyebrow">Only you control these</span></div><div class="feature-card" style="margin-top:12px"><div class="feature-title"><span class="feature-icon">◐</span> Prayer Pause <button class="toggle" id="pauseToggle" aria-label="Toggle Prayer Pause" aria-pressed="false"></button></div><p>Quiet notifications when you choose. No location tracking or automatic prayer-time guesses.</p></div><div class="feature-card" style="margin-top:9px"><div class="feature-title"><span class="feature-icon">✳</span> Gentle reminders <button class="toggle on" id="reminderToggle" aria-label="Toggle gentle reminders" aria-pressed="true"></button></div><p>Take a breath before sending a heated reply. You can turn this off anytime.</p></div></section>
+      <section class="panel-section"><div class="panel-heading"><h2>Built around your boundaries</h2></div><p class="presence-note">Prayer Pause and Quiet Hours are always under your control. Location and notification services are not connected.</p></section>
+      <div class="eyebrow">No members or messages are preloaded</div>
+    </aside>
+  </main>
+
+  <dialog id="policyDialog" aria-labelledby="dialogTitle"><div class="dialog-head"><h2 id="dialogTitle">Community information</h2><button class="icon-button" id="closeDialog" aria-label="Close">×</button></div><div class="dialog-content" id="dialogContent"></div></dialog>
+  <dialog id="callDialog" aria-labelledby="callDialogTitle"><div class="dialog-head"><h2 id="callDialogTitle">Call options</h2><button class="icon-button" id="closeCallDialog" aria-label="Close">×</button></div><div class="dialog-content"><p>Choose a call type for <strong id="callRoomName"></strong>.</p><p class="call-preview" id="callPreviewNote">Calling is not connected yet. Voice and video won't connect another person or access your microphone or camera.</p><div class="call-actions"><button class="secondary" id="voiceCallPreview">♫ Set up voice call</button><button class="secondary" id="videoCallPreview">▣ Set up video call</button></div><p class="hint hidden" id="callPreviewStatus" role="status"></p></div></dialog>
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <script>
+    const servers = [];
+    const conversations = [];
+    const policyText = {
+      rules: `<h3>Our community rules</h3><p>IslamTalk should feel welcoming, useful, and safe for people with different backgrounds and perspectives.</p><ul><li>Speak to people with dignity. No harassment, threats, slurs, or targeted humiliation.</li><li>Respect privacy. Do not share another person's messages, contact details, photos, or personal story without permission.</li><li>Share responsibly. Verify claims before forwarding, especially health, safety, and religious guidance.</li><li>Keep disagreement constructive. Critique ideas without attacking people; leave room for nuance and good faith.</li><li>No spam, scams, impersonation, or deceptive fundraising. Be transparent about affiliations and requests.</li><li>Use circles thoughtfully. Respect each group's purpose, moderator decisions, and consent to be added.</li><li>Do not use the service to discriminate, recruit for violence, or encourage harm.</li><li>Report concerns through a real, staffed reporting channel. Moderation and emergency response are not connected yet.</li></ul><p class="notice">These community standards guide IslamTalk. Moderation tools and support are still in development. If you feel unsafe, leave the conversation and contact someone you trust or local emergency services when appropriate.</p>`,
+      terms: `<h3>1. IslamTalk services</h3><p>IslamTalk is in development. Account registration, message delivery, calling, moderation, and support are not connected in this build. Information entered here stays in the current page and is not sent to other people or services.</p><h3>2. Eligibility and accounts</h3><p>People age 11 and older may use IslamTalk when services are available. Ages 11–12 need parent or guardian permission. This page asks for a date of birth, email, password, and Al-Islam MD employment answer, but does not save or transmit them. Do not use a password from another account.</p><h3>3. Acceptable use</h3><p>Follow the Community Rules. Do not rely on IslamTalk for urgent communication, safety alerts, medical or religious advice, or confidential conversations until the related services are operational.</p><h3>4. Availability</h3><p>Features may change as IslamTalk is built. Availability and message delivery are not guaranteed.</p><h3>5. Important notice</h3><p>This information is not legal advice. Before launch, the service needs jurisdiction-specific legal review, account and age safeguards, moderation processes, and operational support.</p>`,
+      privacy: `<h3>Current data handling</h3><p>Form inputs and spaces exist only in the current page's memory. There is no connected account server, analytics, cookie, local storage, or network submission in this build. Signing out or leaving the page clears this information.</p><h3>Information requested</h3><p>The form asks for your name, date of birth, email, password, and whether you work for Al-Islam MD. Date of birth is used for a local age check. Ages 11–12 are asked to confirm guardian permission, which this page cannot verify. The employee answer is not verified or used to grant access.</p><h3>Messages and device access</h3><p>Messages you write stay in page memory and are not delivered. No contacts, location, microphone, camera, or notification permissions are requested. Calling and support are not connected yet.</p><h3>As services are built</h3><p>Before account, messaging, or support services launch, this notice must be updated with the operator, purposes, retention periods, vendors, user rights, security practices, and contact details.</p>`,
+      forwarding: `<h3>Thoughtful forwarding</h3><p>IslamTalk offers a gentle pause before sharing claims into a group: check who originally published it, whether the source is trustworthy, and whether the context is intact. Source checking does not fact-check or endorse a message.</p><p>Never share private messages or personal information without permission. For religious, health, or safety claims, seek a qualified and trustworthy source rather than relying on a chat forward.</p>`,
+      support: `<h3>IslamTalk Support</h3><p>Support options for account access, calls, privacy, and community guidelines are being set up. Requests are not sent until a support service is connected.</p><form id="supportForm" class="support-form"><label class="field-label" for="supportTopic">What do you need help with?</label><select id="supportTopic"><option>Account access</option><option>Calling</option><option>Privacy</option><option>Community guidelines</option><option>Something else</option></select><label class="field-label" for="supportMessage">Describe the issue</label><textarea id="supportMessage" maxlength="1000" required placeholder="Don't include passwords or sensitive personal information."></textarea><button class="primary" type="submit">Review support request</button></form><p class="hint">Your text stays on this page and is discarded when you leave.</p>`
+    };
+    const authPage = document.getElementById("authPage");
+    const app = document.getElementById("app");
+    const signupForm = document.getElementById("signupForm");
+    const authError = document.getElementById("authError");
+    const dialog = document.getElementById("policyDialog");
+    const callDialog = document.getElementById("callDialog");
+    let profile = null;
+    let activeConversation = null;
+    let activeServer = null;
+    let toastTimer;
+    const escaped = value => String(value).replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
+
+    function showPolicy(key) {
+      const titles = { rules: "Community Rules", terms: "Terms of Use", privacy: "Privacy Policy", forwarding: "Thoughtful Forwarding" };
+      document.getElementById("dialogTitle").textContent = titles[key] || "IslamTalk";
+      document.getElementById("dialogContent").innerHTML = policyText[key] || "";
+      dialog.showModal();
+    }
+    function toast(message) {
+      const element = document.getElementById("toast");
+      element.textContent = message;
+      element.classList.remove("hidden");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => element.classList.add("hidden"), 2800);
+    }
+    document.querySelectorAll("[data-policy]").forEach(button => button.addEventListener("click", () => showPolicy(button.dataset.policy)));
+    document.getElementById("closeDialog").addEventListener("click", () => dialog.close());
+    dialog.addEventListener("click", event => { if (event.target === dialog) dialog.close(); });
+    const birthInput = document.getElementById("birthDate");
+    const ageLimit = new Date();
+    ageLimit.setFullYear(ageLimit.getFullYear() - 11);
+    birthInput.max = ageLimit.toISOString().slice(0, 10);
+    const guardianConsentRow = document.getElementById("guardianConsentRow");
+    const guardianConsent = document.getElementById("guardianConsent");
+    function updateGuardianConsent() {
+      if (!birthInput.value) return;
+      const birthday = new Date(`${birthInput.value}T00:00:00`);
+      const underThirteen = birthday > new Date(new Date().setFullYear(new Date().getFullYear() - 13));
+      guardianConsentRow.classList.toggle("hidden", !underThirteen);
+      guardianConsent.required = underThirteen;
+      if (!underThirteen) guardianConsent.checked = false;
+    }
+    birthInput.addEventListener("change", updateGuardianConsent);
+
+    signupForm.addEventListener("submit", event => {
+      event.preventDefault();
+      authError.textContent = "";
+      if (!signupForm.reportValidity()) return;
+      const birthDate = new Date(`${birthInput.value}T00:00:00`);
+      const latestAllowed = new Date();
+      latestAllowed.setFullYear(latestAllowed.getFullYear() - 11);
+      if (birthDate > latestAllowed) { authError.textContent = "You must be at least 11 to enter IslamTalk."; return; }
+      updateGuardianConsent();
+      if (guardianConsent.required && !guardianConsent.checked) { authError.textContent = "Parent or guardian permission is required for ages 11–12."; return; }
+      profile = { name: document.getElementById("displayName").value.trim(), email: document.getElementById("email").value.trim() };
+      if (!profile.name) { authError.textContent = "Please enter a name."; return; }
+      document.getElementById("profileName").textContent = profile.name;
+      document.getElementById("profileAvatar").textContent = profile.name.charAt(0).toUpperCase();
+      authPage.classList.add("hidden");
+      app.classList.remove("hidden");
+      renderChats();
+    });
+
+    function renderChats() {
+      document.getElementById("serverList").innerHTML = servers.map(server => `<button class="nav-button ${server.id === activeServer ? "active" : ""}" data-server="${escaped(server.id)}"><span class="nav-symbol">▦</span>${escaped(server.name)}</button>`).join("");
+      document.getElementById("channelList").innerHTML = conversations.filter(item => item.kind === "channel" && item.serverId === activeServer).map(item => `<button class="nav-button ${item.id === activeConversation ? "active" : ""}" data-target="${escaped(item.id)}"><span class="nav-symbol">#</span>${escaped(item.name)}</button>`).join("") || `<span class="hint" style="padding:5px 9px">${activeServer ? "No channels yet" : "Create a server first"}</span>`;
+      document.getElementById("groupList").innerHTML = conversations.filter(item => item.kind === "group").map(item => `<button class="nav-button ${item.id === activeConversation ? "active" : ""}" data-target="${escaped(item.id)}"><span class="nav-symbol">◎</span>${escaped(item.name)}</button>`).join("") || `<span class="hint" style="padding:5px 9px">No groups yet</span>`;
+      const targets = conversations;
+      document.getElementById("chatList").innerHTML = targets.length ? `<div class="workspace-empty"><div class="empty-mark">ا</div><h2>Your spaces</h2><p>Select a channel or community group from the sidebar, or create a new one to get started.</p><div class="empty-actions"><button class="secondary" data-create="server">Create server</button><button class="secondary" data-create="group">Create community group</button></div></div>` : `<div class="workspace-empty"><div class="empty-mark">ا</div><h2>Your space, your people</h2><p>Start a server for a shared interest, organize it with channels, or bring people together in a community group.</p><div class="empty-actions"><button class="secondary" data-create="server">Create server</button><button class="secondary" data-create="group">Create community group</button></div></div>`;
+      document.querySelectorAll("[data-server]").forEach(button => button.addEventListener("click", () => { activeServer = button.dataset.server; activeConversation = null; showWorkspace(); renderChats(); }));
+      document.querySelectorAll("[data-target]").forEach(button => button.addEventListener("click", () => openConversation(button.dataset.target)));
+      document.querySelectorAll("[data-create]").forEach(button => button.addEventListener("click", () => showCreate(button.dataset.create)));
+    }
+    function renderMessages(chat) {
+      const messageHtml = chat.messages.map(message => `<article class="message mine"><div class="bubble"><p>${escaped(message.text)}</p>${message.cite ? `<span class="cite-warning">◉ Source reminder added</span>` : ""}<time>${escaped(message.time)}</time></div></article>`).join("");
+      document.getElementById("messages").innerHTML = messageHtml || `<div class="empty-channel"><strong>No messages yet</strong>Start the conversation when you're ready.</div>`;
+      const container = document.getElementById("messages");
+      container.scrollTop = container.scrollHeight;
+    }
+    function openConversation(id) {
+      const chat = conversations.find(item => item.id === id);
+      if (!chat) return;
+      activeConversation = id;
+      document.getElementById("inbox").classList.add("hidden");
+      document.getElementById("conversation").classList.remove("hidden");
+      document.getElementById("activeAvatar").className = "avatar";
+      document.getElementById("activeAvatar").textContent = chat.kind === "channel" ? "#" : "◎";
+      document.getElementById("activeName").textContent = chat.name;
+      document.getElementById("activeStatus").textContent = chat.kind === "channel" ? `Channel in ${servers.find(server => server.id === chat.serverId)?.name || "server"}` : "Community group";
+      renderMessages(chat);
+      renderChats();
+      document.getElementById("viewTitle").textContent = chat.name;
+      document.getElementById("viewSubtitle").textContent = chat.kind === "channel" ? "Server channel" : "Community group";
+    }
+    function showWorkspace() {
+      document.getElementById("conversation").classList.add("hidden");
+      document.getElementById("inbox").classList.remove("hidden");
+      document.getElementById("viewTitle").textContent = activeServer ? servers.find(server => server.id === activeServer)?.name || "Your workspace" : "Your workspace";
+      document.getElementById("viewSubtitle").textContent = "Select or create a channel or community group";
+    }
+    function showCreate(kind) {
+      const isServer = kind === "server";
+      const isChannel = kind === "channel";
+      if (isChannel && !servers.length) { toast("Create a server before adding a channel."); return; }
+      const title = isServer ? "Create a server" : isChannel ? "Create a channel" : "Create a community group";
+      const label = isServer ? "Server name" : isChannel ? "Channel name" : "Group name";
+      const serverField = isChannel ? `<label class="field-label" for="serverChoice">Server</label><select id="serverChoice" name="serverId" required>${servers.map(server => `<option value="${escaped(server.id)}" ${server.id === activeServer ? "selected" : ""}>${escaped(server.name)}</option>`).join("")}</select>` : "";
+      document.getElementById("dialogTitle").textContent = title;
+      document.getElementById("dialogContent").innerHTML = `<form id="createForm" class="create-form" data-kind="${kind}">${serverField}<label class="field-label" for="spaceName">${label}</label><input id="spaceName" name="name" maxlength="40" required placeholder="Give it a name"><p class="hint">Your spaces and messages stay in this browser session.</p><button class="primary" type="submit">Create</button></form>`;
+      dialog.showModal();
+      document.getElementById("spaceName").focus();
+      document.getElementById("createForm").addEventListener("submit", event => {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const name = new FormData(form).get("name").trim();
+        if (!name) return;
+        const id = `space-${Date.now()}`;
+        if (isServer) {
+          servers.push({ id, name });
+          activeServer = id;
+          conversations.push({ id: `channel-${id}`, name: "general", kind: "channel", serverId: id, messages: [] });
+          activeConversation = `channel-${id}`;
+        } else if (isChannel) {
+          const serverId = new FormData(form).get("serverId");
+          activeServer = serverId;
+          const channelId = `channel-${id}`;
+          conversations.push({ id: channelId, name: name.toLowerCase().replace(/\s+/g, "-"), kind: "channel", serverId, messages: [] });
+          activeConversation = channelId;
+        } else {
+          conversations.push({ id, name, kind: "group", messages: [] });
+          activeConversation = id;
+        }
+        dialog.close();
+        renderChats();
+        openConversation(activeConversation);
+      });
+    }
+    document.getElementById("backToInbox").addEventListener("click", () => { activeConversation = null; showWorkspace(); renderChats(); });
+    document.getElementById("messageForm").addEventListener("submit", event => {
+      event.preventDefault();
+      const input = document.getElementById("messageInput");
+      const text = input.value.trim();
+      if (!text) return;
+      const conversation = conversations.find(chat => chat.id === activeConversation);
+      if (!conversation) return;
+      conversation.messages.push({ text, time: new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) });
+      input.value = "";
+      renderMessages(conversation);
+      renderChats();
+    });
+    document.getElementById("messageInput").addEventListener("keydown", event => {
+      if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); document.getElementById("messageForm").requestSubmit(); }
+    });
+    document.getElementById("emojiAction").addEventListener("click", () => { const input = document.getElementById("messageInput"); input.value += " Salaam!"; input.focus(); });
+    document.getElementById("citeAction").addEventListener("click", () => {
+      const input = document.getElementById("messageInput");
+      if (!input.value.trim()) { input.value = "A claim to check: "; input.focus(); }
+      toast("Before sending a claim, check its source and context.");
+      input.dataset.cite = "true";
+    });
+    document.getElementById("messageForm").addEventListener("submit", () => {
+      const input = document.getElementById("messageInput");
+      if (input.dataset.cite === "true") {
+        const latest = conversations.find(chat => chat.id === activeConversation)?.messages.at(-1);
+        if (latest) latest.cite = true;
+        delete input.dataset.cite;
+        setTimeout(() => renderMessages(conversations.find(chat => chat.id === activeConversation)), 0);
+      }
+    });
+    document.getElementById("quietToggle").addEventListener("click", event => {
+      const button = event.currentTarget;
+      const enabled = button.getAttribute("aria-pressed") !== "true";
+      button.setAttribute("aria-pressed", String(enabled));
+      button.classList.toggle("on", enabled);
+      toast(enabled ? "Quiet hours on. Notification delivery is not connected yet." : "Quiet hours off.");
+    });
+    document.getElementById("pauseToggle").addEventListener("click", event => {
+      const button = event.currentTarget;
+      const enabled = button.getAttribute("aria-pressed") !== "true";
+      button.setAttribute("aria-pressed", String(enabled));
+      button.classList.toggle("on", enabled);
+      toast(enabled ? "Prayer Pause is on. Take the time you need." : "Prayer Pause is off.");
+    });
+    document.getElementById("reminderToggle").addEventListener("click", event => {
+      const button = event.currentTarget;
+      const enabled = button.getAttribute("aria-pressed") !== "true";
+      button.setAttribute("aria-pressed", String(enabled));
+      button.classList.toggle("on", enabled);
+      toast(enabled ? "Gentle reminders turned on." : "Gentle reminders turned off.");
+    });
+    document.getElementById("newChat").addEventListener("click", () => showCreate("group"));
+    document.getElementById("createServer").addEventListener("click", () => showCreate("server"));
+    document.getElementById("createChannel").addEventListener("click", () => showCreate("channel"));
+    document.getElementById("createGroup").addEventListener("click", () => showCreate("group"));
+    document.getElementById("mobileServer").addEventListener("click", () => showCreate("server"));
+    document.getElementById("mobileChannel").addEventListener("click", () => showCreate("channel"));
+    document.getElementById("mobileGroup").addEventListener("click", () => showCreate("group"));
+    document.getElementById("mobileSettings").addEventListener("click", () => showPolicy("rules"));
+    document.getElementById("mobileSupport").addEventListener("click", () => showPolicy("support"));
+    document.getElementById("callAction").addEventListener("click", () => {
+      document.getElementById("callRoomName").textContent = document.getElementById("activeName").textContent;
+      document.getElementById("callPreviewNote").textContent = "Calling is not connected yet. Voice and video won't connect another person or access your microphone or camera.";
+      document.getElementById("callPreviewStatus").classList.add("hidden");
+      callDialog.showModal();
+    });
+    document.getElementById("closeCallDialog").addEventListener("click", () => callDialog.close());
+    ["voiceCallPreview", "videoCallPreview"].forEach(id => document.getElementById(id).addEventListener("click", () => {
+      const mode = id === "voiceCallPreview" ? "Voice" : "Video";
+      const status = document.getElementById("callPreviewStatus");
+      status.textContent = `${mode} calling is not connected yet. This selection does not start a call.`;
+      status.classList.remove("hidden");
+    }));
+    document.getElementById("dialogContent").addEventListener("submit", event => {
+      if (event.target.id !== "supportForm") return;
+      event.preventDefault();
+      dialog.close();
+      toast("Support request saved on this page only. Sending is not connected yet.");
+    });
+    document.getElementById("saveAction").addEventListener("click", () => toast("Conversation saved for this session."));
+    document.getElementById("detailsAction").addEventListener("click", () => showPolicy("rules"));
+    document.getElementById("signOut").addEventListener("click", () => {
+      profile = null;
+      conversations.length = 0;
+      servers.length = 0;
+      activeServer = null;
+      activeConversation = null;
+      document.getElementById("signupForm").reset();
+      document.getElementById("app").classList.add("hidden");
+      document.getElementById("authPage").classList.remove("hidden");
+      document.getElementById("messageInput").value = "";
+    });
+  </script>
+</body>
+</html>
